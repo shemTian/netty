@@ -37,6 +37,7 @@ public abstract class Message<T extends MessageBody> {
         messageHeader.setVersion(version);
         messageHeader.setOpCode(opCode);
         messageHeader.setStreamId(streamId);
+        this.messageHeader = messageHeader;
 
         Class<T> messageBodyClass = getMessageBodyClass(opCode);
 

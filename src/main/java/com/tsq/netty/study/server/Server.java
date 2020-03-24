@@ -43,6 +43,7 @@ import java.security.cert.CertificateException;
  */
 @Slf4j
 public class Server {
+
     public static void main(String[] args) throws CertificateException, SSLException {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 

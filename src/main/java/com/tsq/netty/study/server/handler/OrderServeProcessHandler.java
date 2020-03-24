@@ -5,6 +5,7 @@ import com.tsq.netty.study.common.OperationResult;
 import com.tsq.netty.study.common.RequestMessage;
 import com.tsq.netty.study.common.ResponseMessage;
 import com.tsq.netty.study.util.JsonUtil;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,9 @@ public class OrderServeProcessHandler extends SimpleChannelInboundHandler<Reques
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestMessage msg) throws Exception {
+        //memoryLeak test
+        ByteBufAllocator alloc = ctx.channel().alloc();
+
         Operation operation = msg.getMessageBody();
         OperationResult operationResult = operation.execute();
 
@@ -30,7 +34,7 @@ public class OrderServeProcessHandler extends SimpleChannelInboundHandler<Reques
 
         if (ctx.channel().isActive() && ctx.channel().isWritable()) {
             ctx.writeAndFlush(responseMessage);
-        }else {
+        } else {
             log.error("not writable now,message dropped:" + JsonUtil.toJson(responseMessage));
         }
     }

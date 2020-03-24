@@ -17,6 +17,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -39,6 +40,8 @@ public class Client {
         Bootstrap bootstrap = new Bootstrap();
 
         bootstrap.channel(NioSocketChannel.class);
+        bootstrap.option(NioChannelOption.CONNECT_TIMEOUT_MILLIS, 10 * 1000);
+        bootstrap.option(NioChannelOption.SO_REUSEADDR, true);
 
         //thread
         NioEventLoopGroup workGroup = new NioEventLoopGroup(0, new DefaultThreadFactory("worker"));
@@ -77,7 +80,9 @@ public class Client {
 
             RequestMessage requestMessage = new RequestMessage(streamId,new OrderOperation(1,"1"));
             log.info("start send msg do...");
-            channelFuture.channel().writeAndFlush(requestMessage);
+            for (int i = 0; i < 1000000; i++) {
+                channelFuture.channel().writeAndFlush(requestMessage);
+            }
 
             OperationResult operationResult = operationResultFuture.get();
             log.info(JsonUtil.toJson(operationResult));
@@ -86,7 +91,7 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            workGroup.shutdownGracefully();
+//            workGroup.shutdownGracefully();
         }
     }
 }
